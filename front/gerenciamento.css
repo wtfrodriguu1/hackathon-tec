@@ -1,0 +1,28 @@
+.flex-column{
+    display: flex;
+    flex-direction: column;
+}
+ 
+.column-ajust{
+    display: flex;
+}
+ 
+ 
+.column-ajust2{
+    display: flex;
+    justify-content: space-around;
+}
+ 
+.btn-gere{
+    margin-top: 1px;
+    background-color: #6FC9ED;
+    border-radius: 6vh;
+    width: 20%;
+    height: 30%;
+    margin-left: 4vh;
+}
+.texto-gerenciamento{
+    font-size: 3vh;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+}

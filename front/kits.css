@@ -1,0 +1,126 @@
+.btn-kits1 {
+    margin-top: 2vw;
+    background-color: #6FC9ED;
+    border-radius: 6vh;
+    width: 30%;
+    height: 60%;
+    margin-left: 4vh;
+
+}
+
+
+.kit-column2 {
+    /* Centraliza horizontalmente os itens */
+    width: 85%;
+    background-color: #f6fff3;
+    border-left: #000000;
+}
+
+.botoes-sequencia {
+    display: flex;
+    justify-content: space-around;
+    margin-right: 5vh;
+    margin-top: 8vh;
+}
+
+.btn-areas{
+    width: 10vw;
+    height: 10vh;
+    border-radius: 4vh;
+    border: none;
+    background-color: #0045AD;
+    color: white;
+    font-size: 95%;
+}
+.btn-areas:hover{
+    background-color: #0045AD;
+    transform: scale(1.1);
+}
+h3{
+    display: flex;
+    justify-content: center;
+    margin-top: 1vw;
+}
+.card-container{
+    display: flex;
+    margin-left: 2vh;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    width: 23vw;
+    height: 45vh;
+    border-radius: 2vh;
+    margin-top: 1vw;
+}
+
+/* Estilos do Modal */
+.modal {
+    display: none; /* Esconde o modal por padrão */
+    position: fixed; /* Fica fixo na tela */
+    z-index: 1; /* Fica acima de outros elementos */
+    left: 0;
+    top: 0;
+    width: 100%; /* Largura total */
+    height: 100%; /* Altura total */
+    overflow: auto; /* Adiciona scroll se necessário */
+    background-color: rgb(0,0,0); /* Cor de fundo */
+    background-color: rgba(0,0,0,0.4); /* Fundo com opacidade */
+}
+
+.modal-content {
+    background-color: #d0d0d0;
+    margin: 15% auto; /* Centraliza o modal */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 40%; /* Largura do modal */
+    height: 40%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 4vh;
+}
+
+.close {
+    color: #000000;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    display: flex;
+    justify-content: end;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+.botoes-modal{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10%;
+}
+.botoesmodal{
+    width: 20vw;
+    height: 6vh;
+    border: none;
+    background-color: #0045AD;
+    color: white;
+    border-radius: 4vh;
+}
+
+.input-codigo{
+    border-radius: 4vh;
+    background-color: #ffffff;
+    border: none;
+    height: 20vh;
+}
+.input-descricao{
+    border-radius: 4vh;
+    background-color: #ffffff;
+    border: none;
+    height: 20vh;
+}
+
+
+
+

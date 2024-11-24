@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="videos.css">
+    <title>Gravação de Vídeo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        video {
+            border: 2px solid #333;
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .form-container {
+            margin-top: 20px;
+        }
+        .form-container .field {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .form-container input[type="text"] {
+            margin-right: 10px;
+            padding: 10px;
+            font-size: 14px;
+        }
+        .form-container label {
+            font-size: 14px;
+        }
+        .form-container .counter {
+            margin-left: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: #28a745;
+            color: white;
+            border-radius: 10px;
+            display: none;
+            z-index: 1000;
+        }
+        .popup h1 {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gravação de Vídeo com Webcam</h1>
+    <div class="container">
+        <div>
+            <h3>Pré-visualização</h3>
+            <video id="preview" autoplay muted></video>
+        </div>
+        <div>
+            <h3>Vídeo Gravado</h3>
+            <video id="recorded" controls></video>
+        </div>
+    </div>
+    <br>
+    <button class="btn-video" id="start">Iniciar Gravação</button>
+    <button class="btn-video" id="stop" disabled>Parar Gravação</button>
+    <button class="btn-video" id="save" disabled>Enviar</button>
+    <button class="btn-video" id="delete" disabled>Apagar Vídeo</button>
+
+    <div class="form-container">
+        <h4>Itens Checados: <span id="globalCounter">0</span> <span>Total: 3</span></h4>
+        <div class="field">
+            <span>Tesoura</span>
+            <input type="checkbox" id="check1">
+        </div>
+        <div class="field">
+            <span>Bisturi</span>
+            <input type="checkbox" id="check2">
+        </div>
+        <div class="field">
+            <span>Gazes</span>
+            <input type="checkbox" id="check3">
+        </div>
+    </div>
+
+    <div id="successPopup" class="popup">
+        <h1>Sucesso!</h1>
+        <p>Vídeo salvo com sucesso!</p>
+    </div>
+
+    <script>
+        const previewVideo = document.getElementById('preview');
+        const recordedVideo = document.getElementById('recorded');
+        const startButton = document.getElementById('start');
+        const stopButton = document.getElementById('stop');
+        const saveButton = document.getElementById('save');
+        const deleteButton = document.getElementById('delete');
+        const globalCounterDisplay = document.getElementById('globalCounter');
+        const successPopup = document.getElementById('successPopup');
+        let mediaRecorder;
+        let recordedChunks = [];
+        let currentBlob;
+        let globalCounter = 0;
+
+        // Função para acessar a webcam
+        async function startWebcam() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                previewVideo.srcObject = stream;
+
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                    }
+                };
+                mediaRecorder.onstop = () => {
+                    currentBlob = new Blob(recordedChunks, { type: 'video/webm' });
+                    const videoURL = URL.createObjectURL(currentBlob);
+                    recordedVideo.src = videoURL;
+                    recordedChunks = [];
+                    deleteButton.disabled = false;
+                    checkCheckboxesStatus();
+                };
+            } catch (error) {
+                console.error('Erro ao acessar a webcam:', error);
+                alert('Não foi possível acessar a webcam.');
+            }
+        }
+
+        // Botões de controle
+        startButton.addEventListener('click', () => {
+            mediaRecorder?.start();
+            startButton.disabled = true;
+            stopButton.disabled = false;
+        });
+
+        stopButton.addEventListener('click', () => {
+            mediaRecorder?.stop();
+            startButton.disabled = false;
+            stopButton.disabled = true;
+        });
+
+        deleteButton.addEventListener('click', () => {
+            recordedVideo.src = "";
+            currentBlob = null;
+            saveButton.disabled = true;
+            deleteButton.disabled = true;
+        });
+
+        function setupGlobalCheckboxCounter(checkboxId) {
+            const checkbox = document.getElementById(checkboxId);
+            checkbox.addEventListener('change', () => {
+                globalCounter += checkbox.checked ? 1 : -1;
+                globalCounterDisplay.textContent = globalCounter;
+                checkCheckboxesStatus();
+            });
+        }
+
+        setupGlobalCheckboxCounter('check1');
+        setupGlobalCheckboxCounter('check2');
+        setupGlobalCheckboxCounter('check3');
+
+        function checkCheckboxesStatus() {
+            const allChecked = document.querySelectorAll('.field input:checked').length === 3;
+            saveButton.disabled = !(allChecked && currentBlob);
+        }
+
+        saveButton.addEventListener('click', async (event) => {
+            // Impede a recarga da página
+            event.preventDefault(); 
+
+            if (!currentBlob) {
+                alert('Nenhum vídeo gravado!');
+                return
+            }
+
+            // Cria um FormData com o arquivo do vídeo
+            const formData = new FormData();
+            formData.append('video', currentBlob, 'video.webm');
+
+            console.log('Enviando vídeo:', currentBlob); 
+
+            try {
+                // Desabilita o botão durante o envio
+                saveButton.disabled = true;
+                
+                const response = await fetch('http://localhost:3005/api/videos/save', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const result = await response.json();
+                console.log('Resposta do servidor:', result); 
+
+                if (result.success) {
+                    successPopup.style.display = 'block';
+                    
+                    // Adicionando tempo para o popup de sucesso permanecer visível por 10 segundos
+                    setTimeout(() => {
+                        successPopup.style.display = 'none';
+                       
+                    }, 10000);
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error('Erro ao salvar o vídeo:', error);
+                alert('Erro ao salvar o vídeo.');
+            } finally {
+                // Reabilita o botão após o envio
+                saveButton.disabled = false;
+            }
+        });
+
+        // Iniciar webcam ao carregar a página
+        startWebcam();
+    </script>
+
+</body>
+</html>
